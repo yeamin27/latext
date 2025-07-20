@@ -70,14 +70,16 @@ class LaTexTState extends State<LaTexT> {
         final texts = laTeXCode.substring(lastTextEnd, laTeXMatch.start);
         if (prevText1 != null && prevText1.endsWith(' ')) {
           textBlocks.add(
-            const TextSpan(
+            TextSpan(
               text: ' ',
+              style: defaultTextStyle,
             ),
           );
         }
         textBlocks.addAll(
           _extractTextSpans(
             texts,
+            defaultTextStyle
           ),
         );
         if (texts.endsWith(' ')) {
@@ -95,12 +97,17 @@ class LaTexTState extends State<LaTexT> {
           _extractWidgetSpans(
             laTeXMatch.group(3)?.trim() ?? '',
             false,
+            defaultTextStyle,
           ),
         );
       } else {
         textBlocks.addAll([
           const TextSpan(text: '\n'),
-          ..._extractWidgetSpans(laTeXMatch.group(6)?.trim() ?? '', true),
+          ..._extractWidgetSpans(
+            laTeXMatch.group(6)?.trim() ?? '',
+            true,
+            defaultTextStyle,
+          ),
           const TextSpan(text: '\n')
         ]);
       }
@@ -112,6 +119,7 @@ class LaTexTState extends State<LaTexT> {
       textBlocks.addAll(
         _extractTextSpans(
           laTeXCode.substring(lastTextEnd),
+          defaultTextStyle,
         ),
       );
     }
@@ -135,14 +143,15 @@ class LaTexTState extends State<LaTexT> {
     );
   }
 
-  List<TextSpan> _extractTextSpans(String text) {
+  List<TextSpan> _extractTextSpans(String text, TextStyle? style) {
     final texts = text.split(widget.breakDelimiter);
     final List<TextSpan> textSpans = [];
     for (int i = 0; i < texts.length; i++) {
       if (i != 0) {
         textSpans.add(
-          const TextSpan(
+          TextSpan(
             text: '\n',
+            style: style,
           ),
         );
       }
@@ -151,14 +160,16 @@ class LaTexTState extends State<LaTexT> {
       for (int j = 0; j < subTexts.length; j++) {
         if (j != 0) {
           textSpans.add(
-            const TextSpan(
+            TextSpan(
               text: ' ',
+              style: style,
             ),
           );
         }
         textSpans.add(
           TextSpan(
             text: subTexts[j].trim(),
+            style: style,
           ),
         );
       }
@@ -166,14 +177,15 @@ class LaTexTState extends State<LaTexT> {
     return textSpans;
   }
 
-  List<InlineSpan> _extractWidgetSpans(String text, bool align) {
+  List<InlineSpan> _extractWidgetSpans(String text, bool align, TextStyle? style) {
     final texts = text.split(widget.breakDelimiter);
     final List<InlineSpan> widgetSpans = [];
     for (int i = 0; i < texts.length; i++) {
       if (i != 0) {
         widgetSpans.add(
-          const TextSpan(
+          TextSpan(
             text: '\n',
+            style: style,
           ),
         );
       }
@@ -183,8 +195,9 @@ class LaTexTState extends State<LaTexT> {
       for (int j = 0; j < subTexts.length; j++) {
         if (j != 0) {
           widgetSpans.add(
-            const TextSpan(
+            TextSpan(
               text: ' ',
+              style: style,
             ),
           );
         }
@@ -193,7 +206,7 @@ class LaTexTState extends State<LaTexT> {
           scrollDirection: Axis.horizontal,
           child: Math.tex(
             subTexts[j].trim(),
-            textStyle: widget.equationStyle ?? widget.laTeXCode.style,
+            textStyle: widget.equationStyle ?? style,
             onErrorFallback: (exception) =>
                 widget.onErrorFallback?.call(subTexts[j].trim()) ??
                 Math.defaultOnErrorFallback(exception),

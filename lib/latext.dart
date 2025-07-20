@@ -84,8 +84,9 @@ class LaTexTState extends State<LaTexT> {
         );
         if (texts.endsWith(' ')) {
           textBlocks.add(
-            const TextSpan(
+            TextSpan(
               text: ' ',
+              style: defaultTextStyle
             ),
           );
         }
@@ -102,13 +103,19 @@ class LaTexTState extends State<LaTexT> {
         );
       } else {
         textBlocks.addAll([
-          const TextSpan(text: '\n'),
+          TextSpan(
+            text: '\n',
+            style: defaultTextStyle,
+          ),
           ..._extractWidgetSpans(
             laTeXMatch.group(6)?.trim() ?? '',
             true,
             defaultTextStyle,
           ),
-          const TextSpan(text: '\n')
+          TextSpan(
+            text: '\n',
+            style: defaultTextStyle,
+          ),
         ]);
       }
       lastTextEnd = laTeXMatch.end;
